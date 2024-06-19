@@ -1,0 +1,68 @@
+package org.example;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DatabaseManager {
+    private Connection connection;
+
+    public DatabaseManager(String url, String username, String password) throws SQLException {
+        connection = DriverManager.getConnection(url, username, password);
+    }
+
+    public void insertArticle(String title, String href, String datetime, String press) throws SQLException {
+        String query = "INSERT INTO articles (title, href, datetime, press) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, title);
+            stmt.setString(2, href);
+            stmt.setString(3, datetime);
+            stmt.setString(4, press);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void close() throws SQLException {
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+        }
+    }
+
+    // 기사 내용과 기자명을 업데이트하는 메서드
+    public void updateArticleContentAndJournalist(int articleId, String content, String journalist) {
+        String query = "UPDATE articles SET content = ?, journalist = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, content);
+            stmt.setString(2, journalist);
+            stmt.setInt(3, articleId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 모든 기사 URL과 ID를 가져오는 메서드
+    public List<Article> getAllArticleUrls() {
+        List<Article> articles = new ArrayList<>();
+        String query = "SELECT id, title, href, datetime, content, press, journalist FROM articles";
+        try (PreparedStatement stmt = connection.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String title = rs.getString("title");
+                String href = rs.getString("href");
+                String datetime = rs.getString("datetime");
+                String content = rs.getString("content");
+                String press = rs.getString("press");
+                String journalist = rs.getString("journalist");
+
+                // 모든 필드를 포함한 생성자를 사용하여 Article 객체 생성
+                Article article = new Article(id, title, href, datetime, content, press, journalist);
+                articles.add(article);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return articles;
+    }
+}
