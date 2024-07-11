@@ -14,7 +14,6 @@ public class Article {
     private String press;
     private String journalist;
 
-    // Getter for href field
     public String getUrl() {
         return href;
     }

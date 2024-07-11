@@ -17,14 +17,11 @@ public class ArticleCrawler {
     public ArticleCrawler(WebDriver driver, DatabaseManager dbManager) {
         this.driver = driver;
         this.dbManager = dbManager;
-        // contentCrawler 초기화를 추가합니다.
         this.contentCrawler = new ContentCrawler(driver, dbManager);
     }
 
     public void crawl(String url) {
         try {
-            System.out.println("Connected to: " + url);
-
             // WebDriver로 페이지 열기
             driver.get(url);
 
@@ -42,9 +39,10 @@ public class ArticleCrawler {
 
                     // 더보기 버튼이 더 이상 표시되지 않는지 확인
                     if (!driver.findElement(By.cssSelector(".section_more_inner._CONTENT_LIST_LOAD_MORE_BUTTON")).isDisplayed()) {
-                        System.out.println("마지막 페이지 입니다");
+                        System.out.println("더보기 버튼이 없습니다. 기사를 전부 가져왔습니다.");
+                        System.out.println("크롤링을 시작합니다.");
 
-                        // 크롤링 코드 작성
+                        // 크롤링 코드
                         List<WebElement> articles = driver.findElements(By.cssSelector(".sa_text"));
                         for (WebElement article : articles) {
                             WebElement linkElement = article.findElement(By.cssSelector("a.sa_text_title"));
@@ -57,21 +55,23 @@ public class ArticleCrawler {
                             WebElement datetimeElement = article.findElement(By.cssSelector(".sa_text_datetime b"));
                             String datetime = datetimeElement.getText();
 
-                            System.out.println("Title: " + title);
-
                             dbManager.insertArticle(title, href, datetime, press); // 데이터베이스에 삽입
                         }
-
+                        System.out.println("기사 정보 크롤링이 끝났습니다.");
+                        System.out.println("");
                         break;
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    // 예외 상세 확인하고 싶을 시 주석 해제
+                    // e.printStackTrace();
+                    System.out.println("크롤링에서 문제가 생겼습니다.");
                     break;
                 }
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
+            // 예외 상세 확인하고 싶을 시 주석 해제
+            // e.printStackTrace();
+            System.out.println("페이지 접근에서 문제가 생겼습니다.");
         }
     }
 }

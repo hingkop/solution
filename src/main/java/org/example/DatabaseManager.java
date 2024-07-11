@@ -29,15 +29,13 @@ public class DatabaseManager {
     }
 
     // 기사 내용과 기자명을 업데이트하는 메서드
-    public void updateArticleContentAndJournalist(int articleId, String content, String journalist) {
+    public void updateArticleContentAndJournalist(int articleId, String content, String journalist) throws SQLException {
         String query = "UPDATE articles SET content = ?, journalist = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, content);
             stmt.setString(2, journalist);
             stmt.setInt(3, articleId);
             stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
@@ -48,21 +46,24 @@ public class DatabaseManager {
         try (PreparedStatement stmt = connection.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String title = rs.getString("title");
-                String href = rs.getString("href");
-                String datetime = rs.getString("datetime");
-                String content = rs.getString("content");
-                String press = rs.getString("press");
-                String journalist = rs.getString("journalist");
-
-                // 모든 필드를 포함한 생성자를 사용하여 Article 객체 생성
-                Article article = new Article(id, title, href, datetime, content, press, journalist);
-                articles.add(article);
+                articles.add(mapResultSetToArticle(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // 예외 상세 확인하고 싶을 시 주석 해제
+            // e.printStackTrace();
         }
         return articles;
+    }
+
+    // ResultSet을 Article 객체로 매핑하는 헬퍼 메서드
+    private Article mapResultSetToArticle(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        String title = rs.getString("title");
+        String href = rs.getString("href");
+        String datetime = rs.getString("datetime");
+        String content = rs.getString("content");
+        String press = rs.getString("press");
+        String journalist = rs.getString("journalist");
+        return new Article(id, title, href, datetime, content, press, journalist);
     }
 }
