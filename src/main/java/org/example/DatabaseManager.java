@@ -8,6 +8,13 @@ public class DatabaseManager {
     private Connection connection;
 
     public DatabaseManager(String url, String username, String password) throws SQLException {
+        try {
+            // PostgreSQL 드라이버 로드
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("PostgreSQL JDBC Driver not found.", e);
+        }
+
         connection = DriverManager.getConnection(url, username, password);
     }
 
