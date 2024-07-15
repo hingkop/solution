@@ -35,7 +35,7 @@ public class ArticleCrawler {
                     loadMoreButton.click();
 
                     // 버튼 클릭 후 잠시 대기하여 페이지가 로드될 시간을 줌
-                    Thread.sleep(2000);
+                    Thread.sleep(3000);
 
                     // 더보기 버튼이 더 이상 표시되지 않는지 확인
                     if (!driver.findElement(By.cssSelector(".section_more_inner._CONTENT_LIST_LOAD_MORE_BUTTON")).isDisplayed()) {
