@@ -18,13 +18,12 @@ public class DatabaseManager {
         connection = DriverManager.getConnection(url, username, password);
     }
 
-    public void insertArticle(String title, String href, String datetime, String press) throws SQLException {
-        String query = "INSERT INTO articles (title, href, datetime, press) VALUES (?, ?, ?, ?)";
+    public void insertArticle(String title, String href, String press) throws SQLException {
+        String query = "INSERT INTO articles (title, href, press) VALUES (?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, title);
             stmt.setString(2, href);
-            stmt.setString(3, datetime);
-            stmt.setString(4, press);
+            stmt.setString(3, press);
             stmt.executeUpdate();
         }
     }
@@ -35,13 +34,14 @@ public class DatabaseManager {
         }
     }
 
-    // 기사 내용과 기자명을 업데이트하는 메서드
-    public void updateArticleContentAndJournalist(int articleId, String content, String journalist) throws SQLException {
-        String query = "UPDATE articles SET content = ?, journalist = ? WHERE id = ?";
+    // 기사 내용, 기자명, 날짜를 업데이트하는 메서드
+    public void updateArticleContentAndJournalist(int articleId, String content, String journalist, String datetime) throws SQLException {
+        String query = "UPDATE articles SET content = ?, journalist = ?, datetime = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, content);
             stmt.setString(2, journalist);
-            stmt.setInt(3, articleId);
+            stmt.setString(3, datetime);
+            stmt.setInt(4, articleId);
             stmt.executeUpdate();
         }
     }

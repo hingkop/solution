@@ -52,10 +52,8 @@ public class ArticleCrawler {
                             WebElement pressElement = article.findElement(By.cssSelector(".sa_text_press"));
                             String press = pressElement.getText();
 
-                            WebElement datetimeElement = article.findElement(By.cssSelector(".sa_text_datetime b"));
-                            String datetime = datetimeElement.getText();
 
-                            dbManager.insertArticle(title, href, datetime, press); // 데이터베이스에 삽입
+                            dbManager.insertArticle(title, href, press); // 데이터베이스에 삽입
                         }
                         System.out.println("기사 정보 크롤링이 끝났습니다.");
                         System.out.println("");
@@ -63,7 +61,7 @@ public class ArticleCrawler {
                     }
                 } catch (Exception e) {
                     // 예외 상세 확인하고 싶을 시 주석 해제
-                    // e.printStackTrace();
+                    e.printStackTrace();
                     System.out.println("크롤링에서 문제가 생겼습니다.");
                     break;
                 }
